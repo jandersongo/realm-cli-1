@@ -7,8 +7,6 @@ import (
 
 	"github.com/10gen/realm-cli/internal/cloud/realm"
 	"github.com/10gen/realm-cli/internal/terminal"
-
-	"github.com/AlecAivazis/survey/v2"
 )
 
 const (
@@ -86,9 +84,9 @@ func (i multiUserInputs) selectUsers(ui terminal.UI, resolvedUsers []realm.User,
 		selectableUsers[opt] = user
 	}
 	var selectedUsers []string
-	askErr := ui.AskOne(
+	askErr := ui.MultiSelect(
 		&selectedUsers,
-		&survey.MultiSelect{
+		terminal.AskOptions{
 			Message: fmt.Sprintf("Which user(s) would you like to %s?", action),
 			Options: selectableUserOptions,
 		},

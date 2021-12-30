@@ -8,8 +8,6 @@ import (
 	"github.com/10gen/realm-cli/internal/cli/user"
 	"github.com/10gen/realm-cli/internal/cloud/realm"
 	"github.com/10gen/realm-cli/internal/terminal"
-
-	"github.com/AlecAivazis/survey/v2"
 )
 
 type runInputs struct {
@@ -54,7 +52,7 @@ func (i *runInputs) resolveFunction(ui terminal.UI, client realm.Client, groupID
 	}
 
 	var selection string
-	if err := ui.AskOne(&selection, &survey.Select{
+	if err := ui.Select(&selection, terminal.AskOptions{
 		Message: "Select Function",
 		Options: functionOptions,
 	}); err != nil {

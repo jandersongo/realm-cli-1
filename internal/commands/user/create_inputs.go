@@ -9,15 +9,7 @@ import (
 	"github.com/10gen/realm-cli/internal/terminal"
 	"github.com/10gen/realm-cli/internal/utils/flags"
 
-	"github.com/AlecAivazis/survey/v2"
 	"github.com/AlecAivazis/survey/v2/core"
-)
-
-// input field names, per survey
-const (
-	inputCreateFieldEmail      = "email"
-	inputCreateFieldPassword   = "password"
-	inputCreateFieldAPIKeyName = "apiKeyName"
 )
 
 type createInputs struct {
@@ -34,9 +26,9 @@ func (i *createInputs) Resolve(profile *user.Profile, ui terminal.UI) error {
 	}
 
 	if i.UserType == userTypeNil && i.APIKeyName == "" && i.Email == "" {
-		err := ui.AskOne(
+		err := ui.Select(
 			&i.UserType,
-			&survey.Select{
+			terminal.AskOptions{
 				Message: "Which auth provider type are you creating a user for?",
 				Options: []string{userTypeAPIKey.String(), userTypeEmailPassword.String()},
 			},
@@ -50,34 +42,23 @@ func (i *createInputs) Resolve(profile *user.Profile, ui terminal.UI) error {
 		i.UserType = userTypeEmailPassword
 	}
 
-	var questions []*survey.Question
-
 	switch i.UserType {
 	case userTypeAPIKey:
 		if i.APIKeyName == "" {
-			questions = append(questions, &survey.Question{
-				Name:   inputCreateFieldAPIKeyName,
-				Prompt: &survey.Input{Message: "API Key Name"},
-			})
+			if err := ui.Input(&i.APIKeyName, terminal.AskOptions{Message: "API Key Name"}); err != nil {
+				return err
+			}
 		}
 	case userTypeEmailPassword:
 		if i.Email == "" {
-			questions = append(questions, &survey.Question{
-				Name:   inputCreateFieldEmail,
-				Prompt: &survey.Input{Message: "New Email"},
-			})
+			if err := ui.Input(&i.Email, terminal.AskOptions{Message: "New Email"}); err != nil {
+				return err
+			}
 		}
 		if i.Password == "" {
-			questions = append(questions, &survey.Question{
-				Name:   inputCreateFieldPassword,
-				Prompt: &survey.Password{Message: "New Password"},
-			})
-		}
-	}
-
-	if len(questions) > 0 {
-		if err := ui.Ask(i, questions...); err != nil {
-			return err
+			if err := ui.Password(&i.Password, terminal.AskOptions{Message: "New Password"}); err != nil {
+				return err
+			}
 		}
 	}
 

@@ -7,8 +7,6 @@ import (
 	"github.com/10gen/realm-cli/internal/cli/user"
 	"github.com/10gen/realm-cli/internal/cloud/realm"
 	"github.com/10gen/realm-cli/internal/terminal"
-
-	"github.com/AlecAivazis/survey/v2"
 )
 
 type deleteInputs struct {
@@ -62,9 +60,9 @@ func (i *deleteInputs) resolveSecrets(ui terminal.UI, appSecrets []realm.Secret)
 	}
 
 	var selections []string
-	if err := ui.AskOne(
+	if err := ui.MultiSelect(
 		&selections,
-		&survey.MultiSelect{
+		terminal.AskOptions{
 			Message: "Which secret(s) would you like to delete?",
 			Options: options,
 		},

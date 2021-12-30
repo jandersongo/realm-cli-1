@@ -5,8 +5,6 @@ import (
 	"github.com/10gen/realm-cli/internal/cloud/realm"
 	"github.com/10gen/realm-cli/internal/local"
 	"github.com/10gen/realm-cli/internal/terminal"
-
-	"github.com/AlecAivazis/survey/v2"
 )
 
 type initInputs struct {
@@ -24,7 +22,7 @@ func (i *initInputs) Resolve(profile *user.Profile, ui terminal.UI) error {
 
 	if i.RemoteApp == "" {
 		if i.Name == "" {
-			if err := ui.AskOne(&i.Name, &survey.Input{Message: "App Name"}); err != nil {
+			if err := ui.Input(&i.Name, terminal.AskOptions{Message: "App Name"}); err != nil {
 				return err
 			}
 		}

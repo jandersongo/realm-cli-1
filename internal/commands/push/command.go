@@ -11,8 +11,6 @@ import (
 	"github.com/10gen/realm-cli/internal/local"
 	"github.com/10gen/realm-cli/internal/terminal"
 	"github.com/10gen/realm-cli/internal/utils/flags"
-
-	"github.com/AlecAivazis/survey/v2"
 )
 
 const (
@@ -420,15 +418,15 @@ func createNewApp(ui terminal.UI, realmClient realm.Client, appDirectory, groupI
 	}
 
 	if name == "" || !ui.AutoConfirm() {
-		if err := ui.AskOne(&name, &survey.Input{Message: "App Name", Default: name}); err != nil {
+		if err := ui.Input(&name, terminal.AskOptions{Message: "App Name", Default: name}); err != nil {
 			return realm.App{}, false, err
 		}
 	}
 
 	if !ui.AutoConfirm() {
-		if err := ui.AskOne(
+		if err := ui.Select(
 			&location,
-			&survey.Select{
+			terminal.AskOptions{
 				Message: "App Location",
 				Options: realm.LocationValues,
 				Default: location,
@@ -439,9 +437,9 @@ func createNewApp(ui terminal.UI, realmClient realm.Client, appDirectory, groupI
 	}
 
 	if !ui.AutoConfirm() {
-		if err := ui.AskOne(
+		if err := ui.Select(
 			&deploymentModel,
-			&survey.Select{
+			terminal.AskOptions{
 				Message: "App Deployment Model",
 				Options: realm.DeploymentModelValues,
 				Default: deploymentModel,
@@ -451,9 +449,9 @@ func createNewApp(ui terminal.UI, realmClient realm.Client, appDirectory, groupI
 	}
 
 	if !ui.AutoConfirm() {
-		if err := ui.AskOne(
+		if err := ui.Select(
 			&environment,
-			&survey.Select{
+			terminal.AskOptions{
 				Message: "App Environment",
 				Options: realm.EnvironmentValues,
 				Default: environment,

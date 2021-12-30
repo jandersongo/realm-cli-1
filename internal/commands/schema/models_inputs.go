@@ -8,8 +8,6 @@ import (
 	"github.com/10gen/realm-cli/internal/cli/user"
 	"github.com/10gen/realm-cli/internal/terminal"
 	"github.com/10gen/realm-cli/internal/utils/flags"
-
-	"github.com/AlecAivazis/survey/v2"
 )
 
 type datamodelsInputs struct {
@@ -35,7 +33,7 @@ func (i *datamodelsInputs) Resolve(profile *user.Profile, ui terminal.UI) error 
 		}
 
 		var lang string
-		if err := ui.AskOne(&lang, &survey.Select{
+		if err := ui.Select(&lang, terminal.AskOptions{
 			Message: "Select the language you would like to generate data models in",
 			Options: options,
 		}); err != nil {
@@ -44,16 +42,16 @@ func (i *datamodelsInputs) Resolve(profile *user.Profile, ui terminal.UI) error 
 		i.Language = typesByOption[lang]
 
 		if !i.NoImports {
-			var noImports bool
-			if err := ui.AskOne(&noImports, &survey.Confirm{Message: "Would you like to omit imports?"}); err != nil {
+			noImports, err := ui.Confirm("Would you like to omit imports?")
+			if err != nil {
 				return err
 			}
 			i.NoImports = noImports
 		}
 
 		if !i.Flat {
-			var flat bool
-			if err := ui.AskOne(&flat, &survey.Confirm{Message: "Would you like group all generated data models together?"}); err != nil {
+			flat, err := ui.Confirm("Would you like group all generated data models together?")
+			if err != nil {
 				return err
 			}
 			i.Flat = flat

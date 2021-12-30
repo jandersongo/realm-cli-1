@@ -3,12 +3,6 @@ package login
 import (
 	"github.com/10gen/realm-cli/internal/cli/user"
 	"github.com/10gen/realm-cli/internal/terminal"
-	"github.com/AlecAivazis/survey/v2"
-)
-
-const (
-	inputFieldPublicAPIKey  = "publicAPIKey"
-	inputFieldPrivateAPIKey = "privateAPIKey"
 )
 
 type inputs struct {
@@ -18,14 +12,12 @@ type inputs struct {
 
 func (i *inputs) Resolve(profile *user.Profile, ui terminal.UI) error {
 	user := profile.Credentials()
-	var questions []*survey.Question
 
 	if i.PublicAPIKey == "" {
 		if user.PublicAPIKey == "" {
-			questions = append(questions, &survey.Question{
-				Name:   inputFieldPublicAPIKey,
-				Prompt: &survey.Input{Message: "Public API Key", Default: user.PublicAPIKey},
-			})
+			if err := ui.Input(&i.PublicAPIKey, terminal.AskOptions{Message: "Public API Key", Default: user.PublicAPIKey}); err != nil {
+				return err
+			}
 		} else {
 			i.PublicAPIKey = user.PublicAPIKey
 		}
@@ -33,19 +25,13 @@ func (i *inputs) Resolve(profile *user.Profile, ui terminal.UI) error {
 
 	if i.PrivateAPIKey == "" {
 		if user.PrivateAPIKey == "" {
-			questions = append(questions, &survey.Question{
-				Name:   inputFieldPrivateAPIKey,
-				Prompt: &survey.Password{Message: "Private API Key"},
-			})
+			if err := ui.Password(&i.PrivateAPIKey, terminal.AskOptions{Message: "Private API Key"}); err != nil {
+				return err
+			}
 		} else {
 			i.PrivateAPIKey = user.PrivateAPIKey
 		}
 	}
 
-	if len(questions) > 0 {
-		if err := ui.Ask(i, questions...); err != nil {
-			return err
-		}
-	}
 	return nil
 }

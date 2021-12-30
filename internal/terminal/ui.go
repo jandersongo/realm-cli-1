@@ -14,6 +14,10 @@ type UI interface {
 	AutoConfirm() bool
 	Ask(answer interface{}, questions ...*survey.Question) error
 	AskOne(answer interface{}, prompt survey.Prompt) error
+	Input(answer interface{}, askOptions AskOptions) error
+	Select(answer interface{}, askOptions AskOptions) error
+	MultiSelect(answer interface{}, askOptions AskOptions) error
+	Password(answer interface{}, askOptions AskOptions) error
 	Confirm(format string, args ...interface{}) (bool, error)
 	Print(logs ...Log)
 	Spinner(message string, opts SpinnerOptions) Spinner
@@ -34,6 +38,13 @@ func NewUI(config UIConfig, in io.Reader, out, err io.Writer) UI {
 		fdWriter{out},
 		err,
 	}
+}
+
+// AskOptions mirror the config details for survey prompts
+type AskOptions struct {
+	Message string
+	Default string
+	Options []string
 }
 
 type ui struct {
@@ -57,6 +68,51 @@ func (ui *ui) Ask(answer interface{}, questions ...*survey.Question) error {
 }
 
 func (ui *ui) AskOne(answer interface{}, prompt survey.Prompt) error {
+	return survey.AskOne(
+		prompt,
+		answer,
+		survey.WithStdio(ui.in, ui.out, ui.err),
+	)
+}
+
+func (ui *ui) Input(answer interface{}, askOptions AskOptions) error {
+	prompt := &survey.Input{
+		Message: askOptions.Message,
+		Default: askOptions.Default,
+	}
+	return survey.AskOne(
+		prompt,
+		answer,
+		survey.WithStdio(ui.in, ui.out, ui.err),
+	)
+}
+
+func (ui *ui) Password(answer interface{}, askOptions AskOptions) error {
+	return survey.AskOne(
+		&survey.Password{Message: askOptions.Message},
+		answer,
+		survey.WithStdio(ui.in, ui.out, ui.err),
+	)
+}
+
+func (ui *ui) Select(answer interface{}, askOptions AskOptions) error {
+	prompt := &survey.Select{
+		Message: askOptions.Message,
+		Options: askOptions.Options,
+		Default: askOptions.Default,
+	}
+	return survey.AskOne(
+		prompt,
+		answer,
+		survey.WithStdio(ui.in, ui.out, ui.err),
+	)
+}
+
+func (ui *ui) MultiSelect(answer interface{}, askOptions AskOptions) error {
+	prompt := &survey.MultiSelect{
+		Message: askOptions.Message,
+		Options: askOptions.Options,
+	}
 	return survey.AskOne(
 		prompt,
 		answer,
@@ -131,7 +187,7 @@ func (r fdReader) Fd() uintptr {
 	return 0
 }
 
-// fdWriter wraps an io.Writer and exposes the FileDesriptor interface on it
+// fdWriter wraps an io.Writer and exposes the FileDescriptor interface on it
 // the underlying io.Writer's Fd() implementation will be used if it exists
 type fdWriter struct {
 	io.Writer

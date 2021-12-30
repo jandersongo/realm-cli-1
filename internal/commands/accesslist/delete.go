@@ -10,8 +10,6 @@ import (
 	"github.com/10gen/realm-cli/internal/cloud/realm"
 	"github.com/10gen/realm-cli/internal/terminal"
 	"github.com/10gen/realm-cli/internal/utils/flags"
-
-	"github.com/AlecAivazis/survey/v2"
 )
 
 const (
@@ -175,9 +173,9 @@ func (i *deleteInputs) resolveAllowedIP(ui terminal.UI, allowedIPs []realm.Allow
 	}
 
 	var selections []string
-	if err := ui.AskOne(
+	if err := ui.MultiSelect(
 		&selections,
-		&survey.MultiSelect{
+		terminal.AskOptions{
 			Message: "Which IP Address(es) and/or CIDR block(s) would you like to delete?",
 			Options: addressOptions,
 		},

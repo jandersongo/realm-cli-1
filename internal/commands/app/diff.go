@@ -10,8 +10,6 @@ import (
 	"github.com/10gen/realm-cli/internal/local"
 	"github.com/10gen/realm-cli/internal/terminal"
 	"github.com/10gen/realm-cli/internal/utils/flags"
-
-	"github.com/AlecAivazis/survey/v2"
 )
 
 const (
@@ -216,7 +214,7 @@ func (i *diffInputs) Resolve(profile *user.Profile, ui terminal.UI) error {
 	}
 
 	if i.LocalPath == "" && app.RootDir == "" {
-		if err := ui.AskOne(&i.LocalPath, &survey.Input{Message: "App filepath (local)"}); err != nil {
+		if err := ui.Input(&i.LocalPath, terminal.AskOptions{Message: "App filepath (local)"}); err != nil {
 			return err
 		}
 

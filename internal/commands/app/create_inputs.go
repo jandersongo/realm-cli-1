@@ -15,7 +15,6 @@ import (
 	"github.com/10gen/realm-cli/internal/terminal"
 	"github.com/10gen/realm-cli/internal/utils/flags"
 
-	"github.com/AlecAivazis/survey/v2"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -66,7 +65,7 @@ type configDatalake struct {
 func (i *createInputs) Resolve(profile *user.Profile, ui terminal.UI) error {
 	if i.RemoteApp == "" {
 		if i.Name == "" {
-			if err := ui.AskOne(&i.Name, &survey.Input{Message: "App Name"}); err != nil {
+			if err := ui.Input(&i.Name, terminal.AskOptions{Message: "App Name"}); err != nil {
 				return err
 			}
 		}
@@ -135,7 +134,7 @@ func (i *createInputs) resolveLocalPath(ui terminal.UI, wd string) (string, erro
 	}
 	if !proceed {
 		var newDir string
-		if err := ui.AskOne(&newDir, &survey.Input{Message: "Local Path", Default: defaultLocalPath}); err != nil {
+		if err := ui.Input(&newDir, terminal.AskOptions{Message: "Local Path", Default: defaultLocalPath}); err != nil {
 			return "", err
 		}
 
@@ -191,7 +190,7 @@ func (i *createInputs) resolveClusters(ui terminal.UI, client atlas.Client, grou
 				clusterOptions = append(clusterOptions, c.Name)
 			}
 
-			if err := ui.AskOne(&clusterName, &survey.Select{
+			if err := ui.Select(&clusterName, terminal.AskOptions{
 				Message: "Select a cluster to link to your Realm application:",
 				Options: clusterOptions,
 			}); err != nil {
@@ -242,7 +241,7 @@ func (i *createInputs) resolveClusters(ui terminal.UI, client atlas.Client, grou
 				serviceName = i.ClusterServiceNames[idx]
 			} else {
 				if !ui.AutoConfirm() {
-					if err := ui.AskOne(&serviceName, &survey.Input{
+					if err := ui.Input(&serviceName, terminal.AskOptions{
 						Message: fmt.Sprintf("Enter a Service Name for Cluster '%s'", clusterName),
 						Default: serviceName,
 					}); err != nil {
@@ -296,7 +295,7 @@ func (i *createInputs) resolveDatalakes(ui terminal.UI, client atlas.Client, gro
 			serviceName = i.DatalakeServiceNames[idx]
 		} else {
 			if !ui.AutoConfirm() {
-				if err := ui.AskOne(&serviceName, &survey.Input{
+				if err := ui.Input(&serviceName, terminal.AskOptions{
 					Message: fmt.Sprintf("Enter a Service Name for Data Lake '%s'", datalakeName),
 					Default: serviceName,
 				}); err != nil {

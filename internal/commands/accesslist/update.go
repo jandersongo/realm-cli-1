@@ -8,8 +8,6 @@ import (
 	"github.com/10gen/realm-cli/internal/cloud/realm"
 	"github.com/10gen/realm-cli/internal/terminal"
 	"github.com/10gen/realm-cli/internal/utils/flags"
-
-	"github.com/AlecAivazis/survey/v2"
 )
 
 const (
@@ -145,9 +143,9 @@ func (i *updateInputs) resolveAllowedIP(ui terminal.UI, allowedIPs []realm.Allow
 	}
 
 	var selected string
-	if err := ui.AskOne(
+	if err := ui.Select(
 		&selected,
-		&survey.Select{
+		terminal.AskOptions{
 			Message: "Select an IP address or CIDR block to update",
 			Options: selectableOptions,
 		},

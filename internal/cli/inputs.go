@@ -8,8 +8,6 @@ import (
 	"github.com/10gen/realm-cli/internal/cloud/realm"
 	"github.com/10gen/realm-cli/internal/local"
 	"github.com/10gen/realm-cli/internal/terminal"
-
-	"github.com/AlecAivazis/survey/v2"
 )
 
 // ProjectInputs are the project/app inputs for a command
@@ -38,7 +36,7 @@ func (i *ProjectInputs) Resolve(ui terminal.UI, wd string, skipAppPrompt bool) e
 			appOption = app.Option()
 		} else {
 			if !skipAppPrompt {
-				if err := ui.AskOne(&appOption, &survey.Input{Message: "App ID or Name"}); err != nil {
+				if err := ui.Input(&appOption, terminal.AskOptions{Message: "App ID or Name"}); err != nil {
 					return err
 				}
 			}
@@ -90,7 +88,7 @@ func ResolveApp(ui terminal.UI, client realm.Client, filter realm.AppFilter) (re
 	}
 
 	var selection string
-	if err := ui.AskOne(&selection, &survey.Select{
+	if err := ui.Select(&selection, terminal.AskOptions{
 		Message: "Select App",
 		Options: appOptions,
 	}); err != nil {
@@ -123,7 +121,7 @@ func ResolveGroupID(ui terminal.UI, client atlas.Client) (string, error) {
 	}
 
 	var selection string
-	if err := ui.AskOne(&selection, &survey.Select{
+	if err := ui.Select(&selection, terminal.AskOptions{
 		Message: "Atlas Project",
 		Options: groupIDOptions,
 	}); err != nil {

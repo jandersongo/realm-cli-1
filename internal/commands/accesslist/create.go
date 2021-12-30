@@ -7,8 +7,6 @@ import (
 	"github.com/10gen/realm-cli/internal/cli/user"
 	"github.com/10gen/realm-cli/internal/terminal"
 	"github.com/10gen/realm-cli/internal/utils/flags"
-
-	"github.com/AlecAivazis/survey/v2"
 )
 
 var (
@@ -123,7 +121,7 @@ func (i *createInputs) Resolve(profile *user.Profile, ui terminal.UI) error {
 
 	if i.Address == "" && !i.UseCurrent {
 		// TODO(REALMC-9532): validate the user does not enter an empty string
-		if err := ui.AskOne(&i.Address, &survey.Input{Message: "IP Address"}); err != nil {
+		if err := ui.Input(&i.Address, terminal.AskOptions{Message: "IP Address"}); err != nil {
 			return err
 		}
 	}

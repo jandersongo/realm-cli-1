@@ -6,8 +6,6 @@ import (
 	"github.com/10gen/realm-cli/internal/cli"
 	"github.com/10gen/realm-cli/internal/cloud/realm"
 	"github.com/10gen/realm-cli/internal/terminal"
-
-	"github.com/AlecAivazis/survey/v2"
 )
 
 type deleteInputs struct {
@@ -70,7 +68,7 @@ func (inputs *deleteInputs) resolveApps(ui terminal.UI, client realm.Client) ([]
 	}
 
 	var selected []string
-	if err := ui.AskOne(&selected, &survey.MultiSelect{
+	if err := ui.MultiSelect(&selected, terminal.AskOptions{
 		Message: "Select App(s)",
 		Options: appOptions,
 	}); err != nil {

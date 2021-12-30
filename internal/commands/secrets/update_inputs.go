@@ -8,8 +8,6 @@ import (
 	"github.com/10gen/realm-cli/internal/cli/user"
 	"github.com/10gen/realm-cli/internal/cloud/realm"
 	"github.com/10gen/realm-cli/internal/terminal"
-
-	"github.com/AlecAivazis/survey/v2"
 )
 
 type updateInputs struct {
@@ -51,9 +49,9 @@ func (i *updateInputs) resolveSecret(ui terminal.UI, secrets []realm.Secret) (re
 	}
 
 	var selected string
-	if err := ui.AskOne(
+	if err := ui.Select(
 		&selected,
-		&survey.Select{
+		terminal.AskOptions{
 			Message: "Which secret would you like to update?",
 			Options: selectableOptions,
 		},
