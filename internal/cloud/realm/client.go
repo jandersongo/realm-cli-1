@@ -4,6 +4,7 @@ import (
 	"archive/zip"
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 
@@ -106,6 +107,8 @@ func (c *client) doJSON(method, path string, payload interface{}, options api.Re
 	if err != nil {
 		return nil, err
 	}
+
+	fmt.Println(string(body))
 
 	options.Body = bytes.NewReader(body)
 	options.ContentType = api.MediaTypeJSON
